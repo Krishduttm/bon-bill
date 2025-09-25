@@ -11,14 +11,14 @@ const createApp = async () => {
     const expressApp = (0, express_1.default)();
     const adapter = new platform_express_1.ExpressAdapter(expressApp);
     const app = await core_1.NestFactory.create(app_module_1.AppModule, adapter, {
-        logger: ['error', 'warn', 'log'],
+        logger: ["error", "warn", "log"],
     });
     app.enableCors({
         origin: true,
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
         credentials: true,
     });
-    app.setGlobalPrefix('api');
+    app.setGlobalPrefix("api");
     await app.init();
     return expressApp;
 };
@@ -31,12 +31,12 @@ const handler = async (event, context) => {
             });
         }
         catch (error) {
-            console.error('Failed to create app:', error);
+            console.error("Failed to create app:", error);
             return {
                 statusCode: 500,
                 body: JSON.stringify({
-                    error: 'Internal Server Error',
-                    message: 'Failed to initialize application',
+                    error: "Internal Server Error",
+                    message: "Failed to initialize application",
                 }),
             };
         }
@@ -45,11 +45,11 @@ const handler = async (event, context) => {
         return await cachedApp(event, context);
     }
     catch (error) {
-        console.error('Handler error:', error);
+        console.error("Handler error:", error);
         return {
             statusCode: 500,
             body: JSON.stringify({
-                error: 'Internal Server Error',
+                error: "Internal Server Error",
                 message: error.message,
             }),
         };

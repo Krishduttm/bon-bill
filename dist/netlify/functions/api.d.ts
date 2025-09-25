@@ -1,2 +1,2 @@
-import { Handler } from '@netlify/functions';
+import { Handler } from "@netlify/functions";
 export declare const handler: Handler;

@@ -159,8 +159,8 @@ let BillService = BillService_1 = class BillService {
                     countedForReward: false,
                 },
                 order: [["paidDate", "ASC"]],
+                limit: 3,
             });
-            this.logger.log(`Found ${eligibleBills.length} eligible bills (paid on time, not counted for rewards) for user ${userId}`);
             if (eligibleBills.length >= 3) {
                 const billsForReward = eligibleBills.slice(0, 3);
                 this.logger.log(`User ${userId} qualifies for reward - 3 consecutive on-time payments (bills: ${billsForReward
