@@ -1,10 +1,16 @@
 import { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
 import { NestFactory } from "@nestjs/core";
-import { AppModule } from "../../src/app.module";
 import { INestApplication } from "@nestjs/common";
 import { ExpressAdapter } from "@nestjs/platform-express";
 import express from "express";
 import { configure } from "@vendia/serverless-express";
+
+// Load environment variables
+import * as dotenv from "dotenv";
+dotenv.config();
+
+// Import the AppModule - this will be resolved at build time
+import { AppModule } from "../../dist/src/app.module";
 
 let cachedApp: any;
 

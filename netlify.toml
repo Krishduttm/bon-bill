@@ -6,9 +6,8 @@
 [build.environment]
   NODE_VERSION = "18"
 
-[[functions]]
-  from = "netlify/functions/api"
-  to = "/.netlify/functions/api/*"
+[functions]
+  directory = "netlify/functions"
 
 [dev]
   command = "npm run start:dev"
@@ -25,10 +24,5 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/*"
   to = "/.netlify/functions/api/:splat"
   status = 200
