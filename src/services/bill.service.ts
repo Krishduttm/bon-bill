@@ -211,36 +211,43 @@ export class BillService {
     try {
       this.logger.log(`Checking reward eligibility for user ${userId}`);
 
-      const eligibleBills = await this.billRepository.findAll({
+      // Get the most recent paid bills in descending order (most recent first)
+      const recentBills = await this.billRepository.findAll({
         where: {
           userId,
-          isPaid: true,
-          isPaidOnTime: true,
-          countedForReward: false,
         },
-        order: [["paidDate", "ASC"]], // Order by payment date ascending to get chronological order
+        order: [["paidDate", "DESC"]], // Most recent first
         limit: 3,
       });
 
-      if (eligibleBills.length >= 3) {
-        const billsForReward = eligibleBills.slice(0, 3);
-
+      // Check if the most recent 3 bills are consecutive on-time payments
+      // and haven't been counted for reward yet
+      if (recentBills.length < 3) {
         this.logger.log(
-          `User ${userId} qualifies for reward - 3 consecutive on-time payments (bills: ${billsForReward
-            .map((b) => b.id)
-            .join(", ")})`
+          `User ${userId} has less than 3 paid bills, not eligible for reward`
         );
+        return null;
+      }
+      // All 3 must be paid on time and not already counted for reward
+      const allOnTimeAndNotCounted = recentBills.every(
+        (bill) => bill.isPaidOnTime && !bill.countedForReward
+      );
 
-        const reward = await this.rewardService.generateReward(userId);
-
-        await Promise.all(
-          billsForReward.map((bill) => bill.update({ countedForReward: true }))
+      if (!allOnTimeAndNotCounted) {
+        this.logger.log(
+          `User ${userId} doesn't have 3 consecutive on-time payments that haven't been rewarded`
         );
-
-        return reward;
+        return null;
       }
 
-      return null;
+      const reward = await this.rewardService.generateReward(userId);
+
+      // Mark these bills as counted for reward
+      await Promise.all(
+        recentBills.map((bill) => bill.update({ countedForReward: true }))
+      );
+
+      return reward;
     } catch (error) {
       this.logger.error(
         `Error checking reward eligibility for user ${userId}: ${error.message}`,
